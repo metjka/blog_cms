@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -51,6 +52,13 @@ class UserController {
 
         val jwt = tokenService.encode(authentication)
         return ResponseEntity.ok(jwt)
+    }
+
+    @GetMapping("")
+    fun getUser(): UserDTO {
+        val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
+        val user = this.userRepository.findFirstById(principal.id!!)
+        return UserDTO(user.id, user.login, user.fullName)
     }
 
 }
