@@ -51,12 +51,12 @@ class TokenService {
     }
 
     fun validateToken(token: String): Boolean {
-        try {
+        return try {
             this.verifier?.verify(token)
-            return true
+            true
         } catch (e: Exception) {
             print("bad token" + e.toString())
-            return false
+            false
         }
     }
 
