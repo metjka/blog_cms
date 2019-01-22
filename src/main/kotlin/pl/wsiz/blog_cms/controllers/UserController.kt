@@ -34,7 +34,7 @@ class UserController {
                     login = registerDTO.login,
                     password = this.passwordEncoder.encode(registerDTO.password),
                     fullName = registerDTO.fullName))
-            return ResponseEntity.ok(user)
+            return ResponseEntity.ok(UserDTO(user.id, user.login, user.fullName))
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build<Unit>()
     }
