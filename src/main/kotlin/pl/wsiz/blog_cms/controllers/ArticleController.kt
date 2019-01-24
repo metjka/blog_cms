@@ -33,7 +33,7 @@ class ArticleController {
     }
 
     @PutMapping("/{id}")
-    fun createArticle(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<ArticleDTO> {
+    fun update(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<ArticleDTO> {
         val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
         return articleRepository.findById(id).map {
             if (it.createdBy?.id !== principal.id) {
