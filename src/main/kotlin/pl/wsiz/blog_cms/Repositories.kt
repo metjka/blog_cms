@@ -7,6 +7,7 @@ import javax.persistence.*
 @Table(name = "USERS")
 data class User(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
+        @Column(unique = true)
         var login: String? = null,
         var password: String? = null,
         var fullName: String? = null,

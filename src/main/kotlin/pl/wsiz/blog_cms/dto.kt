@@ -11,6 +11,14 @@ class RegisterDTO {
     var fullName: String? = null
 }
 
+
+data class UserDTO(
+        var id: Long? = null,
+        var login: String? = null,
+        var fullName: String? = null
+)
+
+
 class ArticleDTO() {
 
     constructor(id: Long?, title: String?, body: String?, createdBy: Long?) : this() {

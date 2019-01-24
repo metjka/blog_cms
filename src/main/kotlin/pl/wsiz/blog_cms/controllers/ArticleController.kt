@@ -20,19 +20,20 @@ class ArticleController {
     }
 
     @GetMapping("/my")
-    fun getAllMy(): MutableCollection<Article> {
+    fun getAllMy(): List<ArticleDTO> {
         val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
-        return articleRepository.findArticleByCreatedBy(User(id = principal.id))
+        return articleRepository.findArticleByCreatedBy(User(id = principal.id)).map { it -> ArticleDTO(it.id, it.title, it.body, it.createdBy?.id) }
     }
 
     @PostMapping("")
-    fun createArticle(@RequestBody article: ArticleDTO): Article {
+    fun createArticle(@RequestBody article: ArticleDTO): ArticleDTO {
         val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
-        return articleRepository.save(Article(title = article.title, body = article.body, createdBy = User(principal.id)))
+        val saved = articleRepository.save(Article(title = article.title, body = article.body, createdBy = User(principal.id)))
+        return ArticleDTO(saved.id, saved.title, saved.body, saved.createdBy?.id)
     }
 
     @PutMapping("/{id}")
-    fun createArticle(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<ArticleDTO> {
+    fun update(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<ArticleDTO> {
         val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
         return articleRepository.findById(id).map {
             if (it.createdBy?.id !== principal.id) {
@@ -40,6 +41,18 @@ class ArticleController {
             }
             val newArticle = articleRepository.save(Article(id, article.title, article.body, User(id = id)))
             return@map ResponseEntity.ok(ArticleDTO(newArticle.id!!, newArticle.title!!, newArticle.body!!, newArticle.createdBy?.id!!))
+        }.orElse(ResponseEntity.notFound().build())
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<*> {
+        val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
+        return articleRepository.findById(id).map {
+            if (it.createdBy?.id !== principal.id) {
+                return@map ResponseEntity.status(HttpStatus.FORBIDDEN).build<Unit>()
+            }
+            articleRepository.deleteById(id)
+            return@map ResponseEntity.ok().build<Unit>()
         }.orElse(ResponseEntity.notFound().build())
     }
 
