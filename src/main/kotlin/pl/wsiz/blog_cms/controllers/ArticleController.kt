@@ -15,8 +15,9 @@ class ArticleController {
     lateinit var articleRepository: ArticleRepository
 
     @GetMapping("")
-    fun getAll(): MutableList<Article> {
+    fun getAll(): List<ArticleDTO> {
         return articleRepository.findAll()
+                .map { ArticleDTO(it.id, it.title, it.body, it.createdBy?.id)}
     }
 
     @GetMapping("/my")
