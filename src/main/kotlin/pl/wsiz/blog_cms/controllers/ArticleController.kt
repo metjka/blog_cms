@@ -46,7 +46,7 @@ class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") id: Long, @RequestBody article: ArticleDTO): ResponseEntity<*> {
+    fun delete(@PathVariable("id") id: Long): ResponseEntity<*> {
         val principal = SecurityContextHolder.getContext().authentication.principal as UserPrincipal
         return articleRepository.findById(id).map {
             if (it.createdBy?.id !== principal.id) {
